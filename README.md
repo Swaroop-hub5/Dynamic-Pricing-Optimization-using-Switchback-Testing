@@ -74,19 +74,6 @@ Open a second terminal, activate venv, and run:
 streamlit run frontend/app.py
 
 
-📂 Project Structure
-
-bolt_project_1/
-├── backend/
-│   ├── simulation.py   # Generates marketplace demand, supply, and pricing logic
-│   ├── analysis.py     # Aggregates data by 30-min windows & calculates P-values
-│   └── main.py         # FastAPI endpoints serving the frontend
-├── frontend/
-│   └── app.py          # Streamlit dashboard code
-├── requirements.txt    # Python dependencies
-└── README.md           # Project documentation
-
-
 📊 Key Metrics Defined
 
 OCR (Order Completion Rate): Completed Rides / Total Requests. This is the primary metric for liquidity.
