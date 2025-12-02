@@ -1,4 +1,5 @@
 ⚡ Dynamic Pricing Optimization: Switchback Experiment
+[Live App Link](https://dynamic-pricing-optimization-using-switchback-testing-ktiemqfx.streamlit.app/)
 
 Figure 1: Experiment Control and KPI Overview
 ![Dashboard Preview](screenshot_1.png)
