@@ -12,7 +12,7 @@ from backend.analysis import analyze_experiment
 
 st.set_page_config(page_title="Experimentation Platform", layout="wide")
 
-st.title("Mock Experiment: Dynamic Pricing Switchback")
+st.title("Marketplace Mock Experiment: Dynamic Pricing Switchback")
 st.markdown("""
 **Project:** Optimizing Order Completion Rate (OCR) via Dynamic Pricing.  
 **Method:** Switchback Testing (30-min windows) to mitigate network interference.
