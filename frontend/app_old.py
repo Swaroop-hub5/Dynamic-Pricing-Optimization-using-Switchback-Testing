@@ -1,14 +1,10 @@
 import streamlit as st
 import pandas as pd
+import requests
 import plotly.express as px
-import sys
-import os
 
-# --- CLOUD SETUP: Add backend to path so we can import directly ---
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from backend.simulation import MarketplaceSimulator
-from backend.analysis import analyze_experiment
+# Configuration
+API_URL = "http://127.0.0.1:8000"
 
 st.set_page_config(page_title="Experimentation Platform", layout="wide")
 
@@ -26,10 +22,11 @@ st.sidebar.info("Click 'Run Experiment' to generate synthetic data and analyze."
 if st.sidebar.button("Run Experiment"):
     with st.spinner("Simulating Marketplace..."):
         try:
-            # --- DIRECT LOGIC CALL (No API) ---
-            simulator = MarketplaceSimulator()
-            df = simulator.simulate_marketplace() # Logic from backend/simulation.py
-            summary, window_metrics = analyze_experiment(df) # Logic from backend/analysis.py
+            response = requests.post(f"{API_URL}/run-simulation?days={days}")
+            data = response.json()
+            
+            summary = data['summary']
+            metrics_df = pd.DataFrame(data['window_metrics'])
             
             # --- KPI ROW ---
             col1, col2, col3, col4 = st.columns(4)
@@ -60,7 +57,8 @@ if st.sidebar.button("Run Experiment"):
 
             # --- VISUALIZATION ---
             with sig_col2:
-                fig = px.box(window_metrics, x="variant", y="ocr", 
+                # Box Plot of OCR by Variant
+                fig = px.box(metrics_df, x="variant", y="ocr", 
                              title="Distribution of Order Completion Rate (Window-Level)",
                              color="variant", 
                              color_discrete_map={'Control': '#FF4B4B', 'Treatment': '#34C759'})
@@ -69,8 +67,11 @@ if st.sidebar.button("Run Experiment"):
             # --- TIME SERIES ---
             st.subheader("Hourly Performance (Switchback View)")
             
-            metrics_df = window_metrics.sort_values('window_start')
+            # Sort for line chart
+            metrics_df['window_start'] = pd.to_datetime(metrics_df['window_start'])
+            metrics_df = metrics_df.sort_values('window_start')
             
+            # Scatter plot with color mapped to variant
             fig2 = px.scatter(metrics_df, x="window_start", y="ocr", color="variant",
                               title="OCR over Time (Each dot is a 30-min window)",
                               labels={"window_start": "Time", "ocr": "Order Completion Rate"},
@@ -78,6 +79,7 @@ if st.sidebar.button("Run Experiment"):
             st.plotly_chart(fig2, use_container_width=True)
 
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"Error connecting to backend: {e}. Make sure FastAPI is running.")
+
 else:
     st.info("Waiting for input...")
