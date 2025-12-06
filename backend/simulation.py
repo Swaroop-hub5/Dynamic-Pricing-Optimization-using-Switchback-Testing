@@ -20,11 +20,11 @@ class MarketplaceSimulator:
         schedule['variant'] = np.random.choice(['Control', 'Treatment'], size=len(schedule))
         return schedule
 
-    def simulate_marketplace(self, uplift_factor=1.05):
+    def simulate_marketplace(self, uplift_factor=1.05, days = 14):
         """
         Simulates requests, driver availability, and conversion.
         """
-        schedule = self.generate_switchback_schedule()
+        schedule = self.generate_switchback_schedule(days=days)
         data = []
 
         # Simulation Parameters
@@ -46,7 +46,17 @@ class MarketplaceSimulator:
                 base_price = np.random.uniform(5, 20)
                 
                 if variant == 'Treatment':
-                    price = base_price * np.random.uniform(1.0, 1.2) # Surge
+                    #price = base_price * np.random.uniform(1.0, 1.2) # Surge
+                    # --- FIX START ---
+                    # Logic: If we want 5% average uplift (1.05), we vary the surge between 0% and 10%.
+                    # Formula: 1.0 + (uplift_factor - 1.0) * 2
+                    max_surge = 1.0 + (uplift_factor - 1.0) * 2
+                    multiplier = np.random.uniform(1.0, max_surge)
+                    
+                    price = base_price * multiplier
+                    # --- FIX END ---
+                    
+                    
                     driver_acceptance_prob = 0.85 
                     user_conversion_prob = 0.70 
                 else:

@@ -12,11 +12,11 @@ def read_root():
     return {"status": "Bolt Experimentation API Active"}
 
 @app.post("/run-simulation")
-def run_simulation(days: int = 14):
+def run_simulation(days: int = 14, uplift: float = 1.05):
     """Generates synthetic data and runs analysis"""
     
     # 1. Run Simulation
-    df = simulator.simulate_marketplace()
+    df = simulator.simulate_marketplace(uplift_factor=uplift)
     
     # 2. Analyze
     summary, window_metrics = analyze_experiment(df)
